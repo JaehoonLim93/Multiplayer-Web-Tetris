@@ -1,0 +1,53 @@
+﻿<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Tetris</title>
+	<style>
+        body {
+            background: #fff;
+            display: flex;
+            color: #000;
+            font-family: sans-serif;
+            font-size: 2em;
+            text-align: center;
+        }
+		
+	</style>
+    <script>
+        function myFunction() {
+            var person = prompt("Wow! Your score is so high! What's your name?");
+            var score = 30;
+            
+            sendAjax('http://'+location.host+':3011/login', person, score)
+        }
+    </script>
+    <script>
+        function sendAjax(url, person, score){
+
+          // 입력값을 변수에 담고 문자열 형태로 변환
+          var data = {'name' : person, 'mode' : 'insert', 'score' : score};
+          data = JSON.stringify(data);
+
+          // content-type을 설정하고 데이터 송신
+          var xhr = new XMLHttpRequest();
+          //alert(data);
+          xhr.open('POST', url);
+          xhr.setRequestHeader('Content-type', "application/json");
+          xhr.send(data);
+
+          // 데이터 수신이 완료되면 표시
+          xhr.addEventListener('load', function(){
+              // 문자열 형식으로 변환
+              var result = JSON.parse(xhr.responseText);
+              // 데이터가 없으면 return 반환
+              if (result.result !== 'ok') return;
+              // 데이터가 있으면 결과값 표시
+              alert(JSON.stringify(result.db));
+          });
+        }
+    </script>
+</head>
+<body>
+    <button onclick="myFunction()">Click me</button>
+</body>
+</html>  
