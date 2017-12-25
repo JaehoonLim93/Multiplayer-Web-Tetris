@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Tetris</title>
+	<style>
+		body {
+			background: #fff;
+			display: flex;
+			color : #000;
+			font-family : sans-serif;
+			font-size: 2em;
+			text-align: center;
+		}
+
+        table{
+            font-size: 0.6em;
+        }
+		
+		.player{
+			flex: 1 1 auto;
+		}
+		
+		.player.local #canvas {
+			border: solid .2em #ff0000;
+			height: 50vh;
+		}
+		
+		.player.local #upcomming {
+			border: solid .2em #ff0000;
+			height: 12vh;
+		}
+		
+		#canvas {
+			border: solid .2em #000;
+			height: 25vh;
+		}
+		
+	</style>
+    <script>
+        function endGame(scoreValue) {
+            var person = prompt("Wow! Your score is so high! What's your name?");
+            var score = scoreValue;
+            
+            console.log("FUFUFUFU", scoreValue);
+
+            sendAjax('http://' + location.host + ':3017/login', person, score, 'insert')
+        }
+    </script>
+    <script>
+        function sendAjax(url, person, score, mode) {
+
+            // 입력값을 변수에 담고 문자열 형태로 변환
+            var data = { 'name': person, 'mode': mode, 'score': score };
+            data = JSON.stringify(data);
+
+            // content-type을 설정하고 데이터 송신
+            var xhr = new XMLHttpRequest();
+            //alert(data);
+            xhr.open('POST', url);
+            xhr.setRequestHeader('Content-type', "application/json");
+            xhr.send(data);
+
+            // 데이터 수신이 완료되면 표시
+            xhr.addEventListener('load', function () {
+                // 문자열 형식으로 변환
+                var result = JSON.parse(xhr.responseText);
+                // 데이터가 없으면 return 반환
+                if (result.result !== 'ok') return;
+                // 데이터가 있으면 결과값 표시
+
+                var myNodelist = document.querySelectorAll("tr");
+                var i;
+                for (i = 1; i < myNodelist.length; i++) {
+                    myNodelist[i].childNodes[1].innerHTML = i
+                    myNodelist[i].childNodes[3].innerHTML = result.db[i - 1].name
+                    myNodelist[i].childNodes[5].innerHTML = result.db[i - 1].score
+                }
+            });
+        }
+    </script>
+    <script>
+    
+    	let audioList;
+    	let audioFlag = false;
+    	
+    	function audioOnOff(audioList, audioFlag){
+    		
+    		let bgm = document.getElementById("tetrisBgm");	
+    		let bump = document.getElementById("tetrisBump");	
+    		let pu = document.getElementById("tetrisPU");	
+    		let pd = document.getElementById("tetrisPD");	
+    		
+    		if(audioList == 0 && audioFlag == true){
+    			bgm.play();
+    		}
+    			
+    		else if(audioList == 0 && audioFlag == false){
+    			bgm.pause();
+    		}
+    		
+    		
+    		else if(audioList == 1 && audioFlag == false){
+    			
+    			bump.play();
+    		}
+    		
+    		else if(audioList == 2 && audioFlag == true){
+    			pu.play();
+    		}
+    		
+    		else if(audioList == 3 && audioFlag == true){
+    			pd.play();
+    		}
+    		
+    		
+    	}
+    
+    </script>
+</head>
+<body onload="sendAjax('http://' + location.host + ':3017/login', '0', '0', 'search')">
+    <article style="margin-top: auto;margin-bottom: auto;">
+        <h5>Play: Enter <br />Rotate: W or ↑<br />Left: A or ←<br />Right: D or →<br />Down: S or ↓<br /></h5>
+        <table>
+            <thead>
+                <tr>
+                    <td>Ranking</td>
+                    <td>Name</td>
+                    <td>Score</td>
+                </tr>
+            </thead>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>a</td>
+                <td>30</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jaehoon</td>
+                <td>20</td>
+            </tr>
+        </table>
+    </article>
+    <template id="player-template">
+        <div class="player">
+            <p><canvas id="upcomming" class="upcomming" width="120" height="120"></canvas></p>
+            <p><canvas id="canvas" class="tetris" width="240" height="400"></canvas></p>
+            <p><div class="score"></div>
+            <p id="intro"> </p>
+        </div>
+    </template>
+
+    <script src="client/tetris-manager.js"></script>
+    <script src="client/connection-manager.js"></script>
+    <script src="client/arena.js"></script>
+    <script src="client/events.js"></script>
+    <script src="client/player.js"></script>
+    <script src="client/tetris.js"></script>
+    <script src="client/main.js"></script>
+    <audio id="tetrisBgm" preload="auto">
+        <source src="audio_file.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="tetrisBump" preload="auto">
+        <source src="audio_bump.wav" type="audio/mpeg">
+    </audio>
+    <audio id="tetrisPU" preload="auto">
+        <source src="audio_pu.wav" type="audio/mpeg">
+    </audio>
+    <audio id="tetrisPD" preload="auto">
+        <source src="audio_pd.wav" type="audio/mpeg">
+    </audio>
+
+</body>
+</html>  
